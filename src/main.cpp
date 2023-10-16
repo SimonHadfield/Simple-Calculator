@@ -64,6 +64,7 @@ int main()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; -- switch git submodule to docking branch to use
 
 	ImGui::StyleColorsDark();
 
@@ -78,6 +79,12 @@ int main()
 	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	// Calculator variables
+	double firstNumber = 0.0f;
+	double secondNumber = 0.0f;
+	char operation = '+';
+	float result = 0;
+	bool return_result = false;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -89,38 +96,108 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		ImGui::ShowDemoWindow(); // Show demo window! :)
 
-		{
-			static float f = 0.0f;
-			static int counter = 0;
+		// ImGui::ShowDemoWindow();
 
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+		static float f = 0.0f;
+		static int counter = 0;
 
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-			ImGui::Checkbox("Another Window", &show_another_window);
+		ImGui::Begin("Calculator", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
 
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+		// Get the current window size
+		int windowWidth, windowHeight;
+		glfwGetWindowSize(window, &windowWidth, &windowHeight);
 
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
+		ImGui::SetWindowPos(ImVec2(0, 0));
+		ImGui::SetWindowSize(ImVec2(static_cast<float>(windowWidth),static_cast<float>(windowHeight)));
+		glViewport(0, 0, static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-			ImGui::End();
+		// Change
+
+		ImGui::InputDouble("First Number", &firstNumber);
+		ImGui::InputDouble("Second Number", &secondNumber);
+
+		ImGui::Text("Select an operation:");
+
+		if (ImGui::Button("+")) {
+			operation = '+';
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("-")) {
+			operation = '-';
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("*")) {
+			operation = '*';
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("/")) {
+			operation = '/';
+		}
+		if (ImGui::Button("%")) {
+			operation = '%';
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("^")) {
+			operation = '^';
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("!")) {
+			operation = '!';
 		}
 
+		if (ImGui::Button("Calculate")) {
+			switch (operation) {
+			case '+':
+				result = add(firstNumber, secondNumber);
+				break;
+			case '-':
+				result = add(firstNumber, -secondNumber);
+				break;
+			case '*':
+				result = multiply(firstNumber, secondNumber);
+				break;
+			case '/':
+				result = division(firstNumber, secondNumber);
+				break;
+			case '%':
+				result = mod(firstNumber, secondNumber);
+				break;
+			case '^':
+				result = power(firstNumber, secondNumber);	// secondNumber -> exponent
+				break;
+			case '!':
+				result = factorial(static_cast<unsigned int>(firstNumber)); 
+				break;
+			default:
+				result = 0.0f;
+				break;
+			}
+
+			return_result = true;
+		}
+
+		ImGui::Text("Note: Factorial (!) takes first value as argument");
+
+		ImGui::Text("\nResult: ");
+
+		if (return_result)
+		{
+			ImGui::Text("%.2f", result);
+		}
+
+		ImGui::End();
+
 		// Rendering
-		// (Your code clears your framebuffer, renders your other stuff etc.)
 		ImGui::Render();
+
 		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
-		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+		
+
+		glClearColor(0.2, 0.2, 0.2, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
+
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
