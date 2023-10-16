@@ -183,7 +183,15 @@ int main()
 
 		if (return_result)
 		{
-			ImGui::Text("%.2f", result);
+			if (operation != '!')
+			{
+				ImGui::Text("%.2f %c %.2f = %.2f", firstNumber, operation, secondNumber, result);
+				//ImGui::Text(firstNumber, " ", operation, " ", secondNumber, "= %.2f", result);
+			}
+			if (operation == '!')
+			{
+				ImGui::Text("Factorial of %.2f = %.2f", firstNumber, result);
+			}
 		}
 
 		ImGui::End();
