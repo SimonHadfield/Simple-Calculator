@@ -44,9 +44,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\MathFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="vendor\ImGui\imgui.h">
       <Filter>Header Files</Filter>
     </ClInclude>

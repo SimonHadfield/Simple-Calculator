@@ -162,7 +162,6 @@
     <ClCompile Include="vendor\ImGui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\MathFunctions.h" />
     <ClInclude Include="vendor\ImGui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="vendor\ImGui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="vendor\ImGui\backends\imgui_impl_opengl3_loader.h" />
